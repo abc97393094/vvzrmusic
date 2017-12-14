@@ -42,6 +42,14 @@ export default {
       return Vue.http.jsonp('https://api.darlin.me/music/lyric/'+id+'/',{
         jsonp:'callback'
       })
+    },
+    getGuid(){
+      var t = (new Date).getUTCMilliseconds()
+      var guid = Math.round(2147483647 * Math.random()) * t % 1e10
+      return guid;
+    },
+    getKey({},guid){
+      return apiFactory(API.Key)(guid)
     }
   }
 }

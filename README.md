@@ -7,7 +7,7 @@
 
 ## 演示地址
 
-[http://www.wzrblog.com](http://www.wzrblog.com)
+[http://music.wzrblog.com](http://music.wzrblog.com)
 
 ## 安装
 
@@ -42,7 +42,7 @@ npm run build
 ## 作者
 
  温小生 ```name_wzr@qq.com```
- 
+
 ### 谢谢您的支持
 
   觉得不错就点下右上角的star，随时关注我们的动态，非常感谢！

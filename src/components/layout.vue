@@ -18,10 +18,10 @@
         <img class="play-bar-image" :src="coverImgUrl">
       </div>
       <p class="play-bar-text">
-        <span class="song-name">{{song.name}}</span><br />
+        <span class="song-name">{{song.name}}</span><br/>
         <span class="song-singer">{{song.singer | singer}}</span>
       </p>
-      <el-progress :percentage="indicatorPosition" id="progbar"  :show-text=false ></el-progress>
+      <el-progress :percentage="indicatorPosition" id="progbar" :show-text=false></el-progress>
     </div>
   </div>
 </template>
@@ -29,16 +29,26 @@
 <script>
   import zrHeader from './zrHeader.vue'
   import zrFooter from './zrFooter.vue'
+  import Vue from 'vue'
+  import * as def from '../config/def'
   import {mapMutations, mapState, mapGetters} from 'vuex'
 
   export default {
-    mounted(){
-      this.fullscreenLoading=false;
+
+    mounted() {
+      this.fullscreenLoading = false;
+      this.$store.dispatch('getGuid').then((response) => {
+        def.Guid = response;
+        this.$store.dispatch('getKey', def.Guid).then((res) => {
+          def.Key = res.data.key;
+        })
+      })
+
     },
-    components:{
-      zrHeader,zrFooter
+    components: {
+      zrHeader, zrFooter
     },
-    methods:{
+    methods: {
       tapButton(event) {
         event.preventDefault()
         this.playing ? this.pause() : this.play()
@@ -56,14 +66,18 @@
     },
     computed: {
       ...mapGetters([
-        'coverImgUrl','currentTime','duration'
+        'coverImgUrl', 'currentTime', 'duration'
       ]),
       ...mapState({
-        indicatorPosition: state =>  parseInt(state.PlayService.currentTime / state.PlayService.duration *100),
+        indicatorPosition: state => parseInt(state.PlayService.currentTime / state.PlayService.duration * 100),
         playing: state => state.PlayService.playing,
         song: state => state.PlayService.song,
-        dataUrl (state) {
-          return 'http://ws.stream.qqmusic.qq.com/' + state.PlayService.song.id + '.m4a?fromtag=46'
+        dataUrl(state) {
+          if(state.PlayService.song.mid !== undefined) {
+            return 'http://dl.stream.qqmusic.qq.com/C200' + state.PlayService.song.mid + '.m4a?vkey=' + def.Key + '&guid=' + def.Guid + '&fromtag=999'
+          }
+
+
         }
       })
     },
@@ -80,13 +94,19 @@
         }
       }
     },
-    watch:{
+    watch: {
       playing(val) {
         if (val) {
           document.getElementById('music').play()
         } else {
           document.getElementById('music').pause()
         }
+      }
+    },
+    data(){
+      return{
+        Key:null,
+        Guid:null
       }
     }
 
@@ -95,10 +115,12 @@
 
 <style>
   @import 'https://at.alicdn.com/t/font_498489_uk9sxpl9u91thuxr.css';
-  *{
+
+  * {
     margin: 0;
     padding: 0;
   }
+
   #app {
     font-family: 'Avenir', Helvetica, Arial, sans-serif;
     -webkit-font-smoothing: antialiased;
@@ -107,77 +129,97 @@
     color: #2c3e50;
     margin-top: 60px;
   }
+
   .el-row {
     margin-bottom: 20px;
   }
+
   :last-child {
     margin-bottom: 0;
   }
+
   .el-col {
     border-radius: 4px;
   }
+
   .bg-purple-dark {
     background: #99a9bf;
   }
+
   .bg-purple {
     background: #d3dce6;
   }
+
   .bg-purple-light {
     background: #e5e9f2;
   }
+
   .grid-content {
     border-radius: 4px;
     min-height: 36px;
   }
+
   .row-bg {
     padding: 10px 0;
     background-color: #f9fafc;
   }
-  .iconfont{
+
+  .iconfont {
     font-size: 40px;
     vertical-align: middle;
     cursor: pointer;
   }
-  #play-bar{
+
+  #play-bar {
     position: fixed;
     width: 100%;
     text-align: center;
     height: 70px;
-    left:0;
+    left: 0;
     bottom: 0;
-    box-shadow:2px 2px 20px #333333;
-    background: linear-gradient(rgba(64,158,255,.9), rgba(64,158,255,1));
+    box-shadow: 2px 2px 20px #333333;
+    background: linear-gradient(rgba(64, 158, 255, .9), rgba(64, 158, 255, 1));
     color: #fff;
-    z-index:99999;
+    z-index: 99999;
   }
-  .play-bar-info{
+
+  .play-bar-info {
     display: inline-block;
-    padding-top:10px;
+    padding-top: 10px;
   }
-  .play-bar-image{
+
+  .play-bar-image {
     width: 50px;
     display: inline-block;
     vertical-align: middle;
     border-radius: 50%;
     animation: xz 15s infinite linear;
   }
-  .play-bar-text{
+
+  .play-bar-text {
     position: relative;
-    top:14px;
+    top: 14px;
     display: inline-block;
   }
-  .play-bar-text .song-singer{
+
+  .play-bar-text .song-singer {
     font-size: 12px;
     color: #8f8f8f;
   }
-  #progbar{
+
+  #progbar {
     width: 100%;
     position: absolute;
     bottom: -4px;
-    left:0;
+    left: 0;
   }
+
   @keyframes xz {
-    from {transform:rotate(0deg)}
-    to {transform:rotate(360deg)}
+    from {
+      transform: rotate(0deg)
+    }
+    to {
+      transform: rotate(360deg)
+    }
   }
 </style>

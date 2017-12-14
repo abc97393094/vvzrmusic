@@ -142,10 +142,29 @@ export default {
     jsonp:'callback'
   },
   cd:{
-    url:'http://localhost:8090/api',
+    url:'http://music.wzrblog.com:8090/api',
     params:(id)=>{
       return {
         disstid:id
+      }
+    },
+    jsonp: 'jsonpCallback'
+  },
+  Key:{
+    url:'http://c.y.qq.com/base/fcgi-bin/fcg_musicexpress.fcg',
+    params:(guid)=>{
+      return{
+        guid:guid,
+        json:3,
+        g_tk:938407465,
+        loginUin:0,
+        hostUin:0,
+        format:'jsonp',
+        inCharset:'utf8',
+        outCharset:'GB2312',
+        notice:0,
+        platform:'yqq',
+        needNewCode:0
       }
     },
     jsonp: 'jsonpCallback'
