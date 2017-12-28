@@ -46,7 +46,7 @@
   .footer{
     background-color: #f7fbfd;
     width: 100%;
-    padding:50px 0;
+    padding:50px 0 120px 0;
   }
   p{
     text-align: center;

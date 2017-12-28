@@ -36,7 +36,8 @@
     }
   }
 </script>
-<style>
+<style scoped>
+
   .silder-left{
     width: 20%;
     display: inline-block;
@@ -53,5 +54,6 @@
   .slider-right{
     width: 80%;
     display: inline-block;
+
   }
 </style>

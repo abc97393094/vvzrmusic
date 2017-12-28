@@ -4,28 +4,33 @@
 
       <li class="border-1px border-1px-after" v-for="(item,index) in  this._.slice(topListData.songlist,oldNum,newNum)">
 
-        <span style="font-size: 24px;font-weight: 400" class="sort">{{(currentPage-1)*25 +index+1}}</span>
-        <div class="cd-show">
+        <span style="font-size: 24px;font-weight: 300" class="sort" :style="(currentPage-1)*25 +index+1 <= 3 ? 'color:#ff4222' : ''">{{(currentPage-1)*25 +index+1}}</span>
+        <div class="cd-show" @click="play(index)">
           <img :src="'https://y.gtimg.cn/music/photo_new/T002R90x90M000'+item.data.albummid+'.jpg?max_age=2592000'" alt="">
           <span class="songname">{{item.data.songorig}}</span>
+          <span class="songdesc">{{item.data.albumdesc}}</span>
         </div>
         <div class="singer">
-          <span class="artist">
-            <a href="" v-for="singername in item.data.singer">{{singername.name}}</a>
+          <span v-for="(singername,index) in item.data.singer" class="artist">
+            <a href="">{{singername.name}}</a>
+            <span v-if="index < (item.data.singer.length - 1)"> / </span>
           </span>
         </div>
-        <span class="songlist__time">{{item.data.interval | musicmin}}</span>
+        <span class="songlist-time">{{item.data.interval | musicmin}}</span>
       </li>
     </ul>
-    <el-pagination
-      background
-      layout="prev, pager, next"
-      :total="100"
-      :current-page="currentPage"
-      :page-size=pageSize
-      @size-change="handleSizeChange"
-      @current-change="handleCurrentChange">
-    </el-pagination>
+    <div class="pagination">
+      <el-pagination
+        background
+        layout="prev, pager, next"
+        :total="topListData.total_song_num"
+        :current-page="currentPage"
+        :page-size=pageSize
+        @size-change="handleSizeChange"
+        @current-change="handleCurrentChange">
+      </el-pagination>
+    </div>
+
   </div>
 </template>
 <script>
@@ -73,6 +78,23 @@
       },
       imgUrl(width,url){
         return 'https://y.gtimg.cn/music/photo_new/T002R'+width+'x'+width+'M000'+url+'.jpg?max_age=2592000'
+      },
+      play:function (index) {
+        let list = []
+        this.topListData.songlist.forEach(item=>{
+          list.push({
+            id: item.data.songid,
+            mid:item.data.songmid,
+            name:item.data.songorig,
+            singer:item.data.singer,
+            albummid:item.data.albummid
+          })
+        })
+        this.$store.commit('setPlayList',{
+          index:index,
+          list:list
+        })
+        this.$store.commit('play')
       }
 
     },filters:{
@@ -84,9 +106,6 @@
   }
 </script>
 <style scoped>
-  body{
-    font-family: poppin;
-  }
   .singer{
     display: inline-block;
     width: 10%;
@@ -95,16 +114,22 @@
   ul>li{
     list-style: none;
     padding:5px;
-
+  }
+  ul>li:nth-child(odd){
+    background-color: #F9F9F9;
   }
   ul>li img{
     vertical-align:middle;
+    height: 80px;
   }
-  .songlist__time{
+  .songlist-time{
     position: relative;
     top: -3px;
+    width: 5%;
+    color: #999;
+    font-weight:300;
   }
-  ul>li .songlist__time,
+  ul>li .songlist-time,
   ul>li .cd-show,
   ul>li .sort{
     display: inline-block;
@@ -118,18 +143,30 @@
     white-space: nowrap;
     text-overflow:ellipsis;
     overflow: hidden;
-  }
-  .songlist__time{
-    width: 5%;
+    font-weight: 400;
+    font-size: 14px;
   }
   .sort{
     width: 5%;
     text-align: center;
     position: relative;
     top:4px;
+    font-size: 24px;
   }
   .singer a{
-    color: #000;
+    color: #333;
     text-decoration: none;
+  }
+  .songname{
+    font-size: 14px;
+    margin-left: 15px;
+  }
+  .songdesc{
+    color: #999;
+    margin-left:10px;
+    font-size: 14px;
+  }
+  .pagination{
+    padding:20px 0;
   }
 </style>
