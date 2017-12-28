@@ -8,7 +8,8 @@ export default {
     playMode: def.SEQUENTIAL,
     index: 0,
     song: {
-      name: def.DEFAULT_SONG_NAME
+      name: def.DEFAULT_SONG_NAME,
+      singer: def.DEFAULT_SINGER_NAME
     },
     playList: []
   },
@@ -96,10 +97,16 @@ export default {
     duration: state =>
     parseInt(state.duration / 60) + ':' + (Array(2).join(0) + (state.duration % 60)).slice(-2),
     coverImgUrl:state => {
-      if(typeof state.song.albummid === 'undefined')
+      if(typeof state.song.album === 'undefined' && typeof state.song.albummid === 'undefined')
         return def.DEFAULT_IMG
-      else
-        return "https://y.gtimg.cn/music/photo_new/T002R500x500M000"+state.song.albummid+".jpg"
+      else{
+        if(typeof state.song.albummid !== 'undefined'){
+          return "https://y.gtimg.cn/music/photo_new/T002R500x500M000"+state.song.albummid+".jpg"
+        }else{
+          return "https://y.gtimg.cn/music/photo_new/T002R500x500M000"+state.song.album.mid+".jpg"
+        }
+      }
+
     }
   }
 }

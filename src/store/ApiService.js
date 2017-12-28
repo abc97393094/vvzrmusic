@@ -3,10 +3,10 @@ import Vue from 'vue'
 import API from '../config/api'
 
 function apiFactory(api) {
-  return (id = null) => Vue.http.jsonp(
+  return (id = null,p=null) => Vue.http.jsonp(
     api.url,
     {
-      params: api.params(id),
+      params: api.params(id,p),
       jsonp: api.jsonp
     }
   )
@@ -28,6 +28,9 @@ export default {
     },
     search({}, key){
       return apiFactory(API.search)(key)
+    },
+    newSearch({}, key){
+      return apiFactory(API.newSearch)(key.key,key.start)
     },
     getHotKey({}){
       return apiFactory(API.hotkey)()

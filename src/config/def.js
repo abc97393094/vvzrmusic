@@ -9,6 +9,7 @@ export const SEQUENTIAL = 1
 export const RANDOM = 2
 export const DEFAULT_IMG = require('../assets/Vue_Music_Blur.png')
 export const DEFAULT_SONG_NAME = '暂无音乐'
+export const DEFAULT_SINGER_NAME = '暂无音乐'
 export const types = {
   ALBUM: 10002,
   CD: 10014,
