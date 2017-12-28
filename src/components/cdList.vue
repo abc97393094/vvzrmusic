@@ -1,5 +1,6 @@
 <template>
   <div class="inner">
+    <v-loading v-if="loading"></v-loading>
     <div class="mod-data" v-if="!loading">
       <div class="data-cover">
         <img :src="albumImgUrl" alt="">
@@ -17,32 +18,30 @@
       </div>
     </div>
     <div class="m-list" v-if="!loading">
-      <el-table
-        :data="album.songlist"
-        style="width: 100%">
-        <el-table-column
-          prop="name"
-          label="歌曲名"
-          min-width="65%">
-          <template scope="scope"><p @click=play(scope.$index)>{{ scope.row.name }}</p> </template>
-        </el-table-column>
-        <el-table-column
-          prop="singerName"
-          label="歌手"
-          min-width="25%">
-        </el-table-column>
-
-        <el-table-column
-          prop="interval"
-          :formatter="dateFormat"
-          label="时长"
-          min-width="10%">
-        </el-table-column>
-      </el-table>
+      <ul>
+        <li v-for="(item,index) in album.songlist" :key="index" @click="play(index)">
+          <span style="font-weight: 300" class="sort" >{{index+1}}</span>
+          <div class="cd-show">
+            <span class="songname">{{item.name}}</span>
+            <!--<span class="songdesc">{{item.data.albumdesc}}</span>-->
+          </div>
+          <div class="singer">
+                <span v-for="(singername,index) in item.singer" class="artist">
+                  <a href="">{{singername.name}}</a>
+                  <span v-if="index < (item.singer.length - 1)"> / </span>
+                </span>
+          </div>
+          <div class="album">
+            <span>{{item.album.name}}</span>
+          </div>
+          <span class="interval">{{item.interval | musicmin}}</span>
+        </li>
+      </ul>
     </div>
   </div>
 </template>
 <script>
+  import loading from './loading.vue';
   export default {
     data(){
       return{
@@ -55,6 +54,9 @@
       '$route':function () {
         this.showPage();
       }
+    },
+    components:{
+      vLoading:loading
     },
     computed: {
       albumImgUrl () {
@@ -76,30 +78,18 @@
         this.$store.dispatch('getCdList',this.mid).then((response) => {
           this.album = response.data.cdlist[0];
           this.loading=false;
-          for(let i in this.album.songlist){
-            for(let j in this.album.songlist[i].singer){
-              if(typeof(this.album.songlist[i].singerName) == "undefined"){
-                this.album.songlist[i].singerName = this.album.songlist[i].singer[j].name
-              }else{
-                this.album.songlist[i].singerName += this.album.songlist[i].singer[j].name
-              }
-              if(j < this.album.songlist[i].singer.length-1 && this.album.songlist[i].singer.length!=1){
-                this.album.songlist[i].singerName += "/";
-              }
-            }
-          }
         }).catch()
       },
       play(index) {
         console.log(this.album);
         var list = []
-        this.album.list.forEach(item => {
+        this.album.songlist.forEach(item => {
           list.push({
-            id: item.songid,
-            mid: item.songmid,
-            name: item.songorig,
+            id: item.id,
+            mid: item.mid,
+            name: item.name,
             singer: item.singer,
-            albummid: item.albummid
+            album: item.album
           })
         })
         this.$store.commit('setPlayList', {
@@ -107,30 +97,30 @@
           list: list
         })
         this.$store.commit('play')
-      },
-      created(){
-        this.showPage()
-      },
-      filters:{
-        singerFilder: val => {
-          if (typeof val === 'string') {
-            return val
-          } else if (val instanceof Array) {
-            let singer = ''
-            val.forEach(item => {
-              singer = singer + item.name + '/'
-            })
-            return singer
-          }
-        },
-        listenCount: num => {
-          return Math.round(num / 1000) / 10 + '万'
-        }
       }
 
     },
-    created(){
+    mounted(){
       this.showPage();
+    },
+    filters:{
+      singerFilder: val => {
+        if (typeof val === 'string') {
+          return val
+        } else if (val instanceof Array) {
+          let singer = ''
+          val.forEach(item => {
+            singer = singer + item.name + '/'
+          })
+          return singer
+        }
+      },
+      listenCount: num => {
+        return Math.round(num / 1000) / 10 + '万'
+      },
+      musicmin:time=>{
+        return parseInt(time/60)+":"+(parseInt(time%60) < 10?"0"+parseInt(time%60):parseInt(time%60))
+      }
     }
   }
 </script>
@@ -168,4 +158,53 @@
     line-height: 28px;
     font-size: 14px;
   }
+
+  ul li{
+    list-style: none;
+    height: 50px;
+    line-height: 50px;
+    cursor: pointer;
+  }
+  ul li .cd-show,
+  ul li .sort,
+  ul li .album,
+  ul li .singer{
+    display: inline-block;
+    vertical-align: bottom
+  }
+
+  ul li:nth-child(odd){
+    background-color: #fbfbfd;
+  }
+  .cd-show{
+    width: 35%;
+    white-space: nowrap;
+    text-overflow:ellipsis;
+    overflow: hidden;
+  }
+  .singer,
+  .album{
+    width: 25%;
+    white-space: nowrap;
+    text-overflow:ellipsis;
+    overflow: hidden;
+    font-weight: 400;
+  }
+  .sort{
+    width: 5%;
+    text-align: center;
+
+  }
+  .singer a{
+    color: #333;
+    text-decoration: none;
+  }
+  .songname{
+    margin-left: 15px;
+  }
+  .interval{
+    float: right;
+    margin-right: 20px;
+  }
+
 </style>
