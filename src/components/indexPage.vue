@@ -54,6 +54,9 @@
         songList:[]
       }
     },
+    computed: {
+
+    },
     created(){
       this.$store.dispatch('getRecommands').then((response) => {
         this.slider = response.data.data.focus
@@ -72,9 +75,12 @@
   h3{
     text-align: center;
   }
+  .swiper{
+    width: 100%;
+  }
   .el-carousel__item img {
-    height:100%;
     width:100%;
+    height: 100%;
   }
   .recommend{
     background-color: rgba(0,0,0,.02);

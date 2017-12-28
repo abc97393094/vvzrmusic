@@ -1,9 +1,7 @@
 <template>
   <div>
     <zr-header></zr-header>
-    <keep-alive>
       <router-view></router-view>
-    </keep-alive>
     <zr-footer></zr-footer>
     <div id="play-bar">
       <i class="icon-icon-test iconfont" @click="playFront"></i>
@@ -108,6 +106,16 @@
         Key:null,
         Guid:null
       }
+    },
+    created(){
+      try {
+        document.body.removeChild(document.getElementById('loading'))
+//        setTimeout(function() {
+//          document.getElementById('app').style.display = 'block';
+//        }, 500)
+      }catch (e){
+
+      }
     }
 
   }
@@ -119,10 +127,10 @@
   * {
     margin: 0;
     padding: 0;
-  }
+    font-family: poppin, Helvetica, Arial, sans-serif;
 
+  }
   #app {
-    font-family: 'Avenir', Helvetica, Arial, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-align: center;
