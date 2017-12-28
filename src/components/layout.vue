@@ -34,11 +34,11 @@
   export default {
 
     mounted() {
-      this.fullscreenLoading = false;
+      document.body.removeChild(document.getElementById('loading'));
       this.$store.dispatch('getGuid').then((response) => {
-        def.Guid = response;
-        this.$store.dispatch('getKey', def.Guid).then((res) => {
-          def.Key = res.data.key;
+        this.Guid = response;
+        this.$store.dispatch('getKey', this.Guid).then((res) => {
+          this.Key = res.data.key;
         })
       })
 
@@ -72,7 +72,7 @@
         song: state => state.PlayService.song,
         dataUrl(state) {
           if(state.PlayService.song.mid !== undefined) {
-            return 'http://dl.stream.qqmusic.qq.com/C200' + state.PlayService.song.mid + '.m4a?vkey=' + def.Key + '&guid=' + def.Guid + '&fromtag=999'
+            return 'http://dl.stream.qqmusic.qq.com/C200' + state.PlayService.song.mid + '.m4a?vkey=' + this.Key + '&guid=' + this.Guid + '&fromtag=999'
           }
 
 
@@ -105,16 +105,6 @@
       return{
         Key:null,
         Guid:null
-      }
-    },
-    created(){
-      try {
-        document.body.removeChild(document.getElementById('loading'))
-//        setTimeout(function() {
-//          document.getElementById('app').style.display = 'block';
-//        }, 500)
-      }catch (e){
-
       }
     }
 

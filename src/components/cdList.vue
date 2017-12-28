@@ -81,7 +81,6 @@
         }).catch()
       },
       play(index) {
-        console.log(this.album);
         var list = []
         this.album.songlist.forEach(item => {
           list.push({
