@@ -158,6 +158,7 @@
       let sw = true;
 
       window.addEventListener('scroll',function () {
+        console.log(document.body.scrollTop + window.innerHeight , document.body.clientHeight)
         if(document.body.scrollTop + window.innerHeight >= document.body.offsetHeight){
           if(sw && _this.haveMore){
             sw=false;

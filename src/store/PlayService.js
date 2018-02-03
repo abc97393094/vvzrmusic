@@ -17,11 +17,13 @@ export default {
     playIndex (state, index) {
       state.index = index
       state.song = state.playList[index]
+      state.playing = true;
     },
     setPlayList (state, playList) {
       state.playList = playList.list
       state.index = playList.index
       state.song = state.playList[state.index]
+      state.playing = true;
     },
     addToPlayList (state, item) {
       state.playList.push(item)

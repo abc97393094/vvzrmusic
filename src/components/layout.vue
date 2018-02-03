@@ -1,14 +1,18 @@
 <template>
   <div>
-    <zr-header></zr-header>
-      <router-view></router-view>
-    <zr-footer></zr-footer>
-    <div id="play-bar">
+    <zr-header v-if="!playShow"></zr-header>
+      <router-view v-if="!playShow"></router-view>
+      <transition name="play-slide">
+        <play v-show="playShow" @close="hidden" @setPlayTime="setPlayTime"></play>
+      </transition>
+    <zr-footer v-if="!playShow"></zr-footer>
+    <div :style="playShow?'visibility: hidden':''"  @click="showPlayList" id="play-bar">
       <i class="icon-icon-test iconfont" @click="playFront"></i>
       <i class="iconfont" :class="playing?'icon-icon-test1':'icon-icon-test2'" @click="tapButton"></i>
       <i class="icon-icon-test6 iconfont" @click="playNext"></i>
       <div class="play-bar-info">
         <audio id="music"
+               ref="audio"
                :src="dataUrl"
                @timeupdate="updateTime"
                @ended="playContinue"
@@ -27,12 +31,19 @@
 <script>
   import zrHeader from './zrHeader.vue'
   import zrFooter from './zrFooter.vue'
+  import play from '../views/play.vue'
   import Vue from 'vue'
   import * as def from '../config/def'
   import {mapMutations, mapState, mapGetters} from 'vuex'
 
   export default {
-
+    data(){
+      return {
+        playShow:false,
+        Key:null,
+        Guid:null
+      }
+    },
     mounted() {
       document.body.removeChild(document.getElementById('loading'));
       this.$store.dispatch('getGuid').then((response) => {
@@ -41,10 +52,9 @@
           this.Key = res.data.key;
         })
       })
-
     },
     components: {
-      zrHeader, zrFooter
+      zrHeader, zrFooter,play
     },
     methods: {
       tapButton(event) {
@@ -60,6 +70,17 @@
       updateTime() {
         this.$store.commit('updateCurrentTime', parseInt(document.getElementById('music').currentTime))
         this.$store.commit('updateDuration', parseInt(document.getElementById('music').duration))
+      },
+      hidden(){
+        this.playShow = false;
+      },
+      showPlayList(event){
+        event.preventDefault();
+        this.playShow = true;
+      },
+      setPlayTime(val){
+        console.log(val)
+        this.$refs.audio.currentTime = parseInt(val / 100 * this.song.interval)
       }
     },
     computed: {
@@ -70,7 +91,7 @@
         indicatorPosition: state => parseInt(state.PlayService.currentTime / state.PlayService.duration * 100),
         playing: state => state.PlayService.playing,
         song: state => state.PlayService.song,
-        dataUrl(state) {
+          dataUrl(state) {
           if(state.PlayService.song.mid !== undefined) {
             return 'http://dl.stream.qqmusic.qq.com/C200' + state.PlayService.song.mid + '.m4a?vkey=' + this.Key + '&guid=' + this.Guid + '&fromtag=999'
           }
@@ -100,12 +121,6 @@
           document.getElementById('music').pause()
         }
       }
-    },
-    data(){
-      return{
-        Key:null,
-        Guid:null
-      }
     }
 
   }
@@ -118,8 +133,14 @@
     margin: 0;
     padding: 0;
     font-family: poppin, Helvetica, Arial, sans-serif;
-
   }
+  a{
+    text-decoration: none;
+  }
+  li{
+    list-style: none;
+  }
+
   #app {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -219,5 +240,16 @@
     to {
       transform: rotate(360deg)
     }
+  }
+  .play-slide-enter-active {
+    transition: all .3s ease;
+  }
+
+  .play-slide-leave-active {
+    transition: all .3s ease-out;
+  }
+
+  .play-slide-enter, .play-slide-leave-active {
+    transform: translateY(100vh);
   }
 </style>
