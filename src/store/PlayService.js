@@ -7,6 +7,8 @@ export default {
     duration: 0,
     playMode: def.SEQUENTIAL,
     index: 0,
+    Key:null,
+    Guid:null,
     song: {
       name: def.DEFAULT_SONG_NAME,
       singer: def.DEFAULT_SINGER_NAME
@@ -90,6 +92,10 @@ export default {
     },
     setAlbummid(state,albummid){
       state.song = {...state.song,albummid}
+    },
+    setGuidAndKey(state,value){
+      state.Guid = value.Guid;
+      state.Key = value.Key;
     }
   },
   getters: {

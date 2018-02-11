@@ -98,7 +98,7 @@ export default {
   },
   newSearch: {
     url: 'https://c.y.qq.com/soso/fcgi-bin/client_search_cp',
-    params: (key,p) => {
+    params: (key,start) => {
       return {
         ct:24,
         qqmusic_ver:1298,
@@ -111,7 +111,7 @@ export default {
         catZhida:1,
         lossless:0,
         flag_qc:0,
-        p:p,
+        p:start,
         n:20,
         w:key,
         g_tk:5381,
@@ -218,6 +218,10 @@ export default {
         needNewCode:0
       }
     },
+    jsonp: 'jsonpCallback'
+  },
+  new_song: {
+    url: 'https://u.y.qq.com/cgi-bin/musicu.fcg?callback=recom7818074489534006&g_tk=5381&jsonpCallback=recom7818074489534006&loginUin=0&hostUin=0&format=jsonp&inCharset=utf8&outCharset=utf-8&notice=0&platform=yqq&needNewCode=0&data=%7B%22comm%22%3A%7B%22ct%22%3A24%7D%2C%22new_song%22%3A%7B%22module%22%3A%22QQMusic.MusichallServer%22%2C%22method%22%3A%22GetNewSong%22%2C%22param%22%3A%7B%22type%22%3A2%7D%7D%7D',
     jsonp: 'jsonpCallback'
   }
 }

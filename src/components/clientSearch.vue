@@ -158,8 +158,10 @@
       let sw = true;
 
       window.addEventListener('scroll',function () {
-        console.log(document.body.scrollTop + window.innerHeight , document.body.clientHeight)
-        if(document.body.scrollTop + window.innerHeight >= document.body.offsetHeight){
+        //document.body.scrollTop+document.documentElement.scrollTop 浏览器兼容
+        // console.log(document.body.scrollTop+document.documentElement.scrollTop , window.innerHeight , document.body.clientHeight)
+        // console.log(_this.key,_this.start)
+        if(document.body.scrollTop+document.documentElement.scrollTop + window.innerHeight >= document.body.offsetHeight){
           if(sw && _this.haveMore){
             sw=false;
             _this.loading=true; //显示加载动画
@@ -228,10 +230,10 @@
    left:0;
    width: 800px;
    background-color: #fff;
-   /*border: 1px solid #d8dce5;*/
-   visibility: hidden;
+   /*visibility: hidden;*/
    max-height: 0;
-   transition: all .5s;
+   overflow: hidden;
+   transition: max-height .6s;
  }
 
   .mod-search-result > div{

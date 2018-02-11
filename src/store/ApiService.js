@@ -1,12 +1,13 @@
 import Vue from 'vue'
-
+import axios from 'axios'
+import jsonp from 'jsonp'
 import API from '../config/api'
 
 function apiFactory(api) {
-  return (id = null) => Vue.http.jsonp(
+  return (id = null,key=null) => Vue.http.jsonp(
     api.url,
     {
-      params: api.params(id),
+      params: api.params(id,key),
       jsonp: api.jsonp
     }
   )
@@ -40,6 +41,11 @@ export default {
     },
     getCdList({},id){
       return apiFactory(API.cd)(id)
+    },
+    getNewSong({},id){
+      return Vue.http.jsonp('https://u.y.qq.com/cgi-bin/musicu.fcg?callback=recom7818074489534006&g_tk=5381&jsonpCallback=recom7818074489534006&loginUin=0&hostUin=0&format=jsonp&inCharset=utf8&outCharset=utf-8&notice=0&platform=yqq&needNewCode=0&data=%7B%22comm%22%3A%7B%22ct%22%3A24%7D%2C%22new_song%22%3A%7B%22module%22%3A%22QQMusic.MusichallServer%22%2C%22method%22%3A%22GetNewSong%22%2C%22param%22%3A%7B%22type%22%3A'+id+'%7D%7D%7D',{
+        jsonp:'callback'
+      })
     },
     getLyric({},id){
       return Vue.http.jsonp('https://api.darlin.me/music/lyric/'+id+'/',{

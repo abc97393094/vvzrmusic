@@ -4,19 +4,19 @@
 
       <li class="border-1px border-1px-after" v-for="(item,index) in  this._.slice(topListData.songlist,oldNum,newNum)">
 
-        <span style="font-size: 24px;font-weight: 300" class="sort" :style="(currentPage-1)*25 +index+1 <= 3 ? 'color:#ff4222' : ''">{{(currentPage-1)*25 +index+1}}</span>
+        <div style="font-size: 24px;font-weight: 300" class="sort" :style="(currentPage-1)*25 +index+1 <= 3 ? 'color:#ff4222' : ''">{{(currentPage-1)*25 +index+1}}</div>
         <div class="cd-show" @click="play(index)">
           <img :src="'https://y.gtimg.cn/music/photo_new/T002R90x90M000'+item.data.albummid+'.jpg?max_age=2592000'" alt="">
           <span class="songname">{{item.data.songorig}}</span>
           <span class="songdesc">{{item.data.albumdesc}}</span>
         </div>
         <div class="singer">
-          <span v-for="(singername,index) in item.data.singer" class="artist">
+          <div v-for="(singername,index) in item.data.singer" class="artist">
             <a href="">{{singername.name}}</a>
             <span v-if="index < (item.data.singer.length - 1)"> / </span>
-          </span>
+          </div>
         </div>
-        <span class="songlist-time">{{item.data.interval | musicmin}}</span>
+        <div class="songlist-time">{{item.data.interval | musicmin}}</div>
       </li>
     </ul>
     <div class="pagination">
@@ -87,7 +87,8 @@
             mid:item.data.songmid,
             name:item.data.songorig,
             singer:item.data.singer,
-            albummid:item.data.albummid
+            albummid:item.data.albummid,
+            interval:item.data.interval
           })
         })
         this.$store.commit('setPlayList',{
@@ -95,11 +96,6 @@
           list:list
         })
         this.$store.commit('play')
-      }
-
-    },filters:{
-      musicmin:time=>{
-        return parseInt((time/60))+':'+(time%60)
       }
 
     }
@@ -114,6 +110,12 @@
   ul>li{
     list-style: none;
     padding:5px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+  }
+  ul>li>div{
+    display: inline-block;
   }
   ul>li:nth-child(odd){
     background-color: #F9F9F9;
@@ -123,28 +125,25 @@
     height: 80px;
   }
   .songlist-time{
-    position: relative;
-    top: -3px;
     width: 5%;
     color: #999;
     font-weight:300;
   }
-  ul>li .songlist-time,
-  ul>li .cd-show,
-  ul>li .sort{
-    display: inline-block;
-  }
+
   .cd-show{
     display: inline-block;
     width: 70%;
   }
   .singer{
     width: 15%;
+    font-weight: 400;
+    font-size: 14px;
+  }
+  .cd-show,
+  .singer{
     white-space: nowrap;
     text-overflow:ellipsis;
     overflow: hidden;
-    font-weight: 400;
-    font-size: 14px;
   }
   .sort{
     width: 5%;

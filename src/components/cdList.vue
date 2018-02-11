@@ -88,7 +88,8 @@
             mid: item.mid,
             name: item.name,
             singer: item.singer,
-            album: item.album
+            album: item.album,
+            interval:item.interval
           })
         })
         this.$store.commit('setPlayList', {

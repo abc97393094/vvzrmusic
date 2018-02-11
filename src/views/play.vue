@@ -6,10 +6,10 @@
     </div>
     <header ref="header">
       <h1 class="logo">
-        <a href="javascript:;" @click="closeModal">温小云音乐</a>
+        <a href="javascript:;" @click="closeModal">返回</a>
       </h1>
       <div class="right">
-        <a href="#">登录</a>
+        <a href="javascript:;">登录</a>
       </div>
     </header>
 
@@ -21,27 +21,32 @@
           <a href="javascript:;">删除</a>
           <a href="javascript:;">清空列表</a>
         </div>
-        <ul class="song-list-header">
-          <li class="song-name">
-            <div >
-              歌曲名
-            </div>
-          </li>
-          <li class="song-singer">
-            <div>
-              歌手
-            </div>
-          </li>
-          <li class="time">
-            <div>
-              时间
-            </div>
-          </li>
-        </ul>
         <ul class="song-list-item" :style="'height:'+listHeight">
-          <li v-for="(item,index) in playList">
+          <ul class="song-list-header">
+            <li class="song-name">
+              <div >
+                歌曲名
+              </div>
+            </li>
+            <li class="song-singer">
+              <div>
+                歌手
+              </div>
+            </li>
+            <li class="time">
+              <div>
+                时间
+              </div>
+            </li>
+          </ul>
+          <li v-for="(item,index) in playList" class="item">
             <div class="song-name">
               {{item.name}}
+              <div class="song-menu">
+                <a href="javascript:;" class="menu-icon menu-icon-play" @click="playIndex(index)"></a>
+                <a href="javascript:;" class="menu-icon menu-icon-down" @click="download(index)"></a>
+                <a href="javascript:;" class="menu-icon menu-icon-del" @click="del(index)"></a>
+              </div>
             </div>
             <div class="song-singer">
               {{item.singer | singer}}
@@ -58,7 +63,7 @@
           <img :src="coverImgUrl" alt="">
         </div>
         <div class="album-info">
-          <div class="song-name">
+          <div class="song-info-name">
             歌曲名：
             <a href="javascript:;">{{song.name}}</a>
           </div>
@@ -117,20 +122,7 @@
         }
       },
       mounted(){
-        const that=this;
-        const resizeFunction = ()=>{
-          that.resizeTimer = true;
-          window.onresize = null;
-          //resize无需频繁触发
-          setTimeout(()=>{
-            that.screenHeight = this.$refs.body.getBoundingClientRect().height;
-            window.onresize = resizeFunction;
-            that.listHeight = that.screenHeight-107-50+'px';
-
-          },400)
-        }
-        window.onresize = resizeFunction;
-        resizeFunction();
+        window.onresize = this.formHeight;
       },
       computed:{
         ...mapState({
@@ -142,6 +134,14 @@
         ...mapGetters([
           'currentTime', 'duration','coverImgUrl'
         ])
+      },
+      watch:{
+        //监听变化
+        mdShow:function (mdshow) {
+          if(mdshow){
+            this.formHeight();
+          }
+        }
       },
       methods:{
         tapButton(event) {
@@ -156,6 +156,32 @@
           // let val = ((e.offsetX - prog.getBoundingClientRect().left) / prog.offsetWidth)*100; //百分比
           let val = (e.offsetX / prog.offsetWidth)*100; //百分比
           this.$emit("setPlayTime",val);
+        },
+        formHeight(){
+          window.onresize = null;
+          setTimeout(()=>{
+            this.screenHeight = this.$refs.body.getBoundingClientRect().height;
+            window.onresize = this.formHeight;
+            let header = document.querySelector('header');
+            let footer = document.querySelector('footer');
+            console.log(1)
+            this.listHeight = this.screenHeight-107-footer.offsetHeight-header.offsetHeight-41+'px';
+          },400)
+        },
+        playIndex(index){
+          this.$store.commit('playIndex',index);
+        },
+        download(index){
+          let downUrl = 'http://dl.stream.qqmusic.qq.com/C400' + this.$store.state.PlayService.playList[index].mid + '.m4a?vkey=' + this.$store.state.PlayService.Key + '&guid=' + this.$store.state.PlayService.Guid + '&fromtag=999'
+          let a = document.createElement('a');
+          // a.download = "hello world.m4a"; 跨域不生效 等待解决
+          a.href = downUrl;
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+        },
+        del(index){
+          this.$store.commit('deleteFromPlayList',index);
         },
         ...mapMutations([
           'play', 'pause', 'playFront', 'playNext', 'playContinue'
@@ -176,6 +202,7 @@
     left:0;
     background-color: rgb(20, 44, 73);
     font-family: poppin;
+    overflow: hidden;
 
     ::-webkit-scrollbar{
       width: 8px;
@@ -197,15 +224,17 @@
 
   header{
     display: flex;
-    padding: 20px;
+    height: 5%;
+    align-items: center;
     justify-content: space-between;
-    line-height: 1.25em;
     position: relative;
     z-index: 3;
-
+    width: 1280px;
+    min-width: 1280px;
+    margin: 0 auto;
     .logo{
       a{
-        font-size: 1.25rem;
+        font-size: 1.25rem !important;
       }
     }
   }
@@ -233,8 +262,21 @@
     margin: 0 auto;
     display: flex;
     justify-content: space-between;
+    align-items: center;
     position: relative;
     z-index: 3;
+    height: 85%;
+
+    //公共样式
+    .song-name{
+      width: 63%;
+    }
+    .song-singer{
+      width: 27%;
+    }
+    .time{
+      width: 10%;
+    }
 
     a{
       color: #fff;
@@ -242,25 +284,20 @@
     }
     .song-list{
       width: 70%;
+      a.iconfont{
+        font-size: 36px !important;
+      }
       li{
         display: flex;
         color: #fff;
         opacity: nth($opacity,1);
         line-height: 50px;
-        .song-name{
-          width: 68%;
-        }
-        .song-singer{
-          width: 26%;
-        }
-        .time{
-          width: 5%;
-        }
-
+        border-top: solid 1px rgba(255,255,255,.1);
       }
       .toolbar{
         display: flex;
         justify-content: space-between;
+        margin-bottom: 20px;
         a{
           border: 1px solid rgba(255,255,255,.3);
           width: 24%;
@@ -274,19 +311,49 @@
       }
       .song-list-header{
         display: flex;
-        .song-name{
-          width: 68%;
-        }
-        .song-singer{
-          width: 26%;
-        }
-        .time{
-          width: 5%;
-        }
       }
       .song-list-item{
-        max-height: 600px;
+        max-height: 800px;
         overflow-y: scroll;
+        .song-name{
+          position: relative;
+        }
+        .item{
+          .menu-icon{
+            background: url('https://y.gtimg.cn/mediastyle/yqq/img/icon_list_menu.png?max_age=2592000&v=4566a1a62ecad72fe9b9205d1ad62d2b');
+            width: 36px;
+            height: 36px;
+            display: block;
+            margin-right: 10px;
+            opacity: .3 !important;
+            &:hover{
+              opacity: 1 !important;
+            }
+          }
+          .menu-icon-play{
+            background-position: -120px 0;
+          }
+          .menu-icon-down{
+            background-position: -120px -120px;
+          }
+          .menu-icon-del{
+            background-position: -120px -160px;
+          }
+
+          &:hover{
+            .song-menu{
+              display: flex;
+              height: 100%;
+              align-items: center;
+            }
+          }
+        }
+      }
+      .song-menu{
+        display: none;
+        position: absolute;
+        right: 20px;
+        top: 0;
       }
     }
     .song-info{
@@ -303,6 +370,7 @@
 
       .album-info{
         padding: 30px 0;
+        font-size: 14px;
 
         div{
           padding: 3px;
@@ -315,6 +383,7 @@
   footer{
     width: 1280px;
     min-width: 1280px;
+    height: 10%;
     margin: 0 auto;
     display: flex;
     position: relative;
@@ -322,7 +391,7 @@
     align-content: center;
     a.iconfont{
       color: #fff;
-      font-size: 36px !important;
+      font-size: 50px !important;
       opacity: nth($opacity,1);
     }
     .prog{
@@ -331,12 +400,13 @@
       .music-info{
         display: flex;
         justify-content: space-between;
+        padding-top: 10px;
         color: rgba(255,255,255,.6);
       }
       .player-prog{
         position: relative;
         cursor: pointer;
-        padding: 5px 0;
+        padding: 10px 0;
         .progress-load{
           height: 2px;
           background-color: rgba(255,255,225,.2);
@@ -347,7 +417,7 @@
           height: 2px;
           background-color: rgba(255,255,225,.8);
           position: absolute;
-          top: 5px;
+          top: 10px;
           left: 0;
           .dot{
             display: inline-block;

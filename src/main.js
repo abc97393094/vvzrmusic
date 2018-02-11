@@ -9,12 +9,17 @@ import VueResource from 'vue-resource'
 import {singer,musicmin} from "./utils/zrUtil";
 import store from './store'
 import axios from 'axios'
+import VueLazyLoad from 'vue-lazyload'
 
 import _ from 'lodash'
 Vue.prototype._ = _
 
 Vue.use(ElementUI)
 Vue.use(VueResource)
+Vue.use(VueLazyLoad,{
+  loading: require('./assets/loading.svg'),
+  attempt: 1
+})
 Vue.filter("singer",singer);
 Vue.filter("musicmin",musicmin);
 Vue.prototype.$axios = axios;

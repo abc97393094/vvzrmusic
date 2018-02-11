@@ -36,7 +36,6 @@
         }
       },
       currentTimeStamp: function () {
-        console.log(this.currentTime)
         let t = this.currentTime.split(':')
         return (parseInt(t[0]) * 60 + parseInt(t[1])) * 100
       }

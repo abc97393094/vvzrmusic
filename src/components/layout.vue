@@ -1,15 +1,15 @@
 <template>
   <div>
-    <zr-header v-if="!playShow"></zr-header>
-      <router-view v-if="!playShow"></router-view>
+    <zr-header v-show="!playShow"></zr-header>
+      <router-view v-show="!playShow"></router-view>
       <transition name="play-slide">
-        <play v-show="playShow" @close="hidden" @setPlayTime="setPlayTime"></play>
+        <play :mdShow="playShow" v-show="playShow" @close="hidden" @setPlayTime="setPlayTime"></play>
       </transition>
-    <zr-footer v-if="!playShow"></zr-footer>
-    <div :style="playShow?'visibility: hidden':''"  @click="showPlayList" id="play-bar">
-      <i class="icon-icon-test iconfont" @click="playFront"></i>
+    <zr-footer v-show="!playShow"></zr-footer>
+    <div :style="playShow?'visibility: hidden':''"  @click.self="showPlayList" id="play-bar">
+      <i class="icon-icon-test iconfont" @click.self="playFront"></i>
       <i class="iconfont" :class="playing?'icon-icon-test1':'icon-icon-test2'" @click="tapButton"></i>
-      <i class="icon-icon-test6 iconfont" @click="playNext"></i>
+      <i class="icon-icon-test6 iconfont" @click.self="playNext"></i>
       <div class="play-bar-info">
         <audio id="music"
                ref="audio"
@@ -23,7 +23,6 @@
         <span class="song-name">{{song.name}}</span><br/>
         <span class="song-singer">{{song.singer | singer}}</span>
       </p>
-      <el-progress :percentage="indicatorPosition" id="progbar" :show-text=false></el-progress>
     </div>
   </div>
 </template>
@@ -50,6 +49,7 @@
         this.Guid = response;
         this.$store.dispatch('getKey', this.Guid).then((res) => {
           this.Key = res.data.key;
+          this.$store.commit('setGuidAndKey',{Guid:response,Key:res.data.key});
         })
       })
     },
@@ -93,7 +93,7 @@
         song: state => state.PlayService.song,
           dataUrl(state) {
           if(state.PlayService.song.mid !== undefined) {
-            return 'http://dl.stream.qqmusic.qq.com/C200' + state.PlayService.song.mid + '.m4a?vkey=' + this.Key + '&guid=' + this.Guid + '&fromtag=999'
+            return 'http://dl.stream.qqmusic.qq.com/C400' + state.PlayService.song.mid + '.m4a?vkey=' + this.Key + '&guid=' + this.Guid + '&fromtag=999'
           }
 
 
@@ -127,7 +127,7 @@
 </script>
 
 <style>
-  @import 'https://at.alicdn.com/t/font_498489_uk9sxpl9u91thuxr.css';
+  @import 'https://at.alicdn.com/t/font_498489_0r2cq6sit0wtrzfr.css';
 
   * {
     margin: 0;
